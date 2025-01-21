@@ -5,7 +5,6 @@ import string
 
 # Load the trained SVC model and Random Forest model
 svc_model = joblib.load('svc_model.pkl')
-rf_model = joblib.load('rf_model.pkl')
 
 # Function to preprocess text
 def preprocess_text(text):
