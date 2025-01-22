@@ -9,8 +9,8 @@ from sklearn.svm import SVC
 import numpy as np
 
 
-vectorizer = joblib.load(vectorizer_path)  # Load TF-IDF Vectorizer
-svc_model = joblib.load(svc_model_path)  # Load the SVC model
+vectorizer = joblib.load(vectorizer_path)
+svc_model = joblib.load(svc_model_path)
 
 # Initialize preprocessing tools
 nltk.download('stopwords')
