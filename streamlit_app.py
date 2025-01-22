@@ -65,12 +65,14 @@ def analyze_sentiment(review):
     
     # Check if the review_tfidf has the expected number of features (e.g., 200 features)
     expected_feature_count = 200  # Adjust this if you trained the model with a different number of features
+    st.write(f"Review TF-IDF shape: {review_tfidf.shape}")  # Debugging line to check the shape
+    
     if review_tfidf.shape[1] != expected_feature_count:
         st.error(f"Unexpected number of features. Expected {expected_feature_count}, but got {review_tfidf.shape[1]}")
         return "Error: Feature mismatch"
     
     # Make sentiment prediction using the SVC model
-    sentiment = svc_model.predict(review_tfidf)  # Predict using the SVC model
+    sentiment = svc_model.predict(review_tfidf.toarray())  # Convert sparse matrix to array for SVC model
     
     # Return the sentiment result
     return "Positive" if sentiment == 1 else "Negative"
