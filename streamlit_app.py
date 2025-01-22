@@ -18,13 +18,19 @@ nltk.download('wordnet')
 vectorizer_path = 'vectorizer1.pkl'  # Path to the TF-IDF vectorizer model
 svc_model_path = 'svc_model.pkl'     # Path to the SVC model
 
-# Load the pre-trained models
-try:
-    vectorizer = joblib.load(vectorizer_path)
-    svc_model = joblib.load(svc_model_path)
-    st.success("Models loaded successfully!")
-except Exception as e:
-    st.error(f"Error loading models: {str(e)}")
+# Check if the model files exist
+if not os.path.exists(vectorizer_path):
+    st.error(f"Error: {vectorizer_path} file not found.")
+elif not os.path.exists(svc_model_path):
+    st.error(f"Error: {svc_model_path} file not found.")
+else:
+    # Load the pre-trained models
+    try:
+        vectorizer = joblib.load(vectorizer_path)
+        svc_model = joblib.load(svc_model_path)
+        st.success("Models loaded successfully!")
+    except Exception as e:
+        st.error(f"Error loading models: {str(e)}")
 
 # Initialize preprocessing tools
 stop_words = set(stopwords.words('english'))
