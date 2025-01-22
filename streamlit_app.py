@@ -8,6 +8,9 @@ from nltk.stem import WordNetLemmatizer
 import numpy as np
 from sklearn.svm import SVC
 
+# Set page configuration first
+st.set_page_config(page_title="Movie Review Sentiment Analysis", page_icon="🎬", layout="wide")
+
 # Ensure the models are available in the same directory as the script
 vectorizer_path = os.path.join(os.getcwd(), 'vectorizer1.pkl')  # Path to the vectorizer model
 svc_model_path = os.path.join(os.getcwd(), 'svc_model.pkl')  # Path to the SVC model
@@ -36,8 +39,6 @@ def preprocess_text(text):
     return " ".join(words)  # Return the preprocessed text as a single string
 
 # Streamlit App with Customizations
-st.set_page_config(page_title="Movie Review Sentiment Analysis", page_icon="🎬", layout="wide")
-
 # Title with custom color
 st.markdown('<h1 style="color: #4CAF50;">Movie Review Sentiment Analysis 🎥</h1>', unsafe_allow_html=True)
 
