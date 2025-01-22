@@ -18,9 +18,9 @@ svc_model_filename = 'svc_model.pkl'
 if not os.path.exists(models_dir):
     os.makedirs(models_dir)
 
-# URLs of the models in your GitHub repository
-vectorizer1_url = "https://raw.githubusercontent.com/yourusername/yourrepo/main/models/vectorizer1.pkl"
-svc_model_url = "https://raw.githubusercontent.com/yourusername/yourrepo/main/models/svc_model.pkl"
+# URLs of the models in your GitHub repository (replace these with actual URLs)
+vectorizer1_url = "https://github.com/Amanullahmemon75/Movie_Review_Sentiment_Analyzer/tree/main/vectorizer1.pkl"
+svc_model_url = "https://github.com/Amanullahmemon75/Movie_Review_Sentiment_Analyzer/tree/main/svc_model.pkl"
 
 # Download model files from GitHub
 def download_model(url, filename):
@@ -39,8 +39,12 @@ download_model(svc_model_url, svc_model_filename)
 vectorizer_path = os.path.join(models_dir, vectorizer1_filename)
 svc_model_path = os.path.join(models_dir, svc_model_filename)
 
-vectorizer = joblib.load(vectorizer_path)
-svc_model = joblib.load(svc_model_path)
+# Check if the models are successfully downloaded before loading
+if os.path.exists(vectorizer_path) and os.path.exists(svc_model_path):
+    vectorizer = joblib.load(vectorizer_path)
+    svc_model = joblib.load(svc_model_path)
+else:
+    st.error("Failed to load models. Please check the file paths and ensure they are downloaded correctly.")
 
 # Initialize preprocessing tools
 nltk.download('stopwords')
