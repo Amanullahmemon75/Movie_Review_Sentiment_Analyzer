@@ -4,26 +4,30 @@ import string
 import streamlit as st
 
 # Load the trained SVC model and vectorizer
-svc_model = joblib.load('svc_model.pkl')
-vectorizer = joblib.load('vectorizer.pkl')
+svc_model = joblib.load('svc_model.pkl')  # Load the trained model
+vectorizer = joblib.load('vectorizer.pkl')  # Load the TfidfVectorizer
 
-# Function to preprocess text
+# Function to preprocess text (tokenization and cleaning)
 def preprocess_text(text):
-    # Convert to lowercase, remove punctuation, and split into words
-    text = text.lower()
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    return text  # Return the processed text as a string, not a list
+    text = text.lower()  # Convert to lowercase
+    text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
+    return text  # Return processed text as a string (not a list of tokens)
 
-# Function for sentiment prediction
+# Function to predict sentiment based on the processed text
 def predict_sentiment(review):
-    # Preprocess the review
+    # Step 1: Preprocess the review text
     processed_review = preprocess_text(review)
     
-    # Transform the review using the TfidfVectorizer
-    features = vectorizer.transform([processed_review])
+    # Step 2: Transform the processed review using the TfidfVectorizer
+    features = vectorizer.transform([processed_review])  # Ensure the input is a list of strings
     
-    # Make a prediction
+    # Step 3: Check the shape of the features (for debugging purposes)
+    print(f"Features shape: {features.shape}")
+    
+    # Step 4: Make a prediction using the trained SVC model
     prediction = svc_model.predict(features)
+    
+    # Return the sentiment based on the prediction (assuming binary: 1 = Positive, 0 = Negative)
     return "Positive 🎉" if prediction[0] == 1 else "Negative 😔"
 
 # Streamlit App Setup
@@ -60,7 +64,7 @@ review_text = st.text_area("Type the movie review here:")
 
 # Prediction on button click
 if st.button("🎬 Predict Sentiment"):
-    if review_text.strip():
+    if review_text.strip():  # Ensure there is some text to process
         sentiment = predict_sentiment(review_text)
         st.markdown(f"<h3 style='color: #FFD700; text-align: center;'>Sentiment: {sentiment}</h3>", unsafe_allow_html=True)
     else:
