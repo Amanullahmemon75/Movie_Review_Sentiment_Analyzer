@@ -2,10 +2,15 @@ import joblib
 import numpy as np
 import string
 import streamlit as st
+from gensim.models import Word2Vec
+from sklearn.svm import SVC
 
-# Load the trained SVC model and vectorizer
-svc_model = joblib.load('svc_model.pkl')  # Load the trained model
-vectorizer = joblib.load('vectorizer1.pkl')  # Load the TfidfVectorizer
+# Load the trained models
+try:
+    svc_model = joblib.load('svc_model.pkl')  # Load the trained model
+    vectorizer = joblib.load('vectorizer.pkl')  # Load the TfidfVectorizer
+except Exception as e:
+    st.error(f"Error loading models: {e}")
 
 # Function to preprocess text (tokenization and cleaning)
 def preprocess_text(text):
@@ -19,14 +24,22 @@ def predict_sentiment(review):
     processed_review = preprocess_text(review)
     
     # Step 2: Transform the processed review using the TfidfVectorizer
-    features = vectorizer.transform([processed_review])  # Ensure the input is a list of strings
+    try:
+        features = vectorizer.transform([processed_review])  # Ensure the input is a list of strings
+    except Exception as e:
+        st.error(f"Error transforming text: {e}")
+        return None
     
     # Step 3: Check the shape of the features (for debugging purposes)
     print(f"Features shape: {features.shape}")
     
     # Step 4: Make a prediction using the trained SVC model
-    prediction = svc_model.predict(features)
-    
+    try:
+        prediction = svc_model.predict(features)
+    except Exception as e:
+        st.error(f"Error predicting sentiment: {e}")
+        return None
+
     # Return the sentiment based on the prediction (assuming binary: 1 = Positive, 0 = Negative)
     return "Positive 🎉" if prediction[0] == 1 else "Negative 😔"
 
@@ -66,6 +79,7 @@ review_text = st.text_area("Type the movie review here:")
 if st.button("🎬 Predict Sentiment"):
     if review_text.strip():  # Ensure there is some text to process
         sentiment = predict_sentiment(review_text)
-        st.markdown(f"<h3 style='color: #FFD700; text-align: center;'>Sentiment: {sentiment}</h3>", unsafe_allow_html=True)
+        if sentiment:
+            st.markdown(f"<h3 style='color: #FFD700; text-align: center;'>Sentiment: {sentiment}</h3>", unsafe_allow_html=True)
     else:
         st.error("Please enter a review to analyze.")
