@@ -8,9 +8,6 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.svm import SVC
 import numpy as np
 
-# Load the pre-trained models
-vectorizer_path = os.path.join('models', 'vectorizer1.pkl')  # For TF-IDF Vectorizer
-svc_model_path = os.path.join('models', 'svc_model.pkl')  # Trained SVC model
 
 vectorizer = joblib.load(vectorizer_path)  # Load TF-IDF Vectorizer
 svc_model = joblib.load(svc_model_path)  # Load the SVC model
