@@ -7,6 +7,9 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np
 
+# Set the page config at the very beginning
+st.set_page_config(page_title="Movie Review Sentiment Analysis", page_icon="🎬", layout="wide")
+
 # Download necessary NLTK resources
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -58,7 +61,6 @@ def analyze_sentiment(review):
     return "Positive" if sentiment == 1 else "Negative"
 
 # Streamlit App
-st.set_page_config(page_title="Movie Review Sentiment Analysis", page_icon="🎬", layout="wide")
 st.title("🎬 Movie Review Sentiment Analysis")
 
 review = st.text_area("Enter your movie review:")
