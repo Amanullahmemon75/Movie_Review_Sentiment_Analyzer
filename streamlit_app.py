@@ -75,7 +75,7 @@ def analyze_sentiment(review):
     sentiment = svc_model.predict(review_tfidf.toarray())  # Convert sparse matrix to array for SVC model
     
     # Return the sentiment result
-    return "Positive" if sentiment == 1 else "Negative"
+    return "Positive" if sentiment == 0 else "Negative"
 
 # Streamlit App
 st.title("🎬 Movie Review Sentiment Analysis")
