@@ -5,14 +5,26 @@ import streamlit as st
 
 # Load the trained SVC model and vectorizer
 svc_model = joblib.load('svc_model.pkl')
-vectorizer = joblib.load('vectorizer.pkl')  # Load the vectorizer used during training
+vectorizer = joblib.load('vectorizer.pkl')
 
 # Function to preprocess text
 def preprocess_text(text):
     # Convert to lowercase, remove punctuation, and split into words
     text = text.lower()
     text = text.translate(str.maketrans('', '', string.punctuation))
-    return text
+    return text  # Return the processed text as a string, not a list
+
+# Function for sentiment prediction
+def predict_sentiment(review):
+    # Preprocess the review
+    processed_review = preprocess_text(review)
+    
+    # Transform the review using the TfidfVectorizer
+    features = vectorizer.transform([processed_review])
+    
+    # Make a prediction
+    prediction = svc_model.predict(features)
+    return "Positive 🎉" if prediction[0] == 1 else "Negative 😔"
 
 # Streamlit App Setup
 st.markdown("""
@@ -45,13 +57,6 @@ st.markdown("<div class='title'>🎬 Sentiment Analysis of Movie Reviews 🎥</d
 # Input: Movie review text
 st.subheader("📝 Enter Your Movie Review")
 review_text = st.text_area("Type the movie review here:")
-
-# Function for sentiment prediction
-def predict_sentiment(review):
-    preprocessed_review = preprocess_text(review)
-    features = vectorizer.transform([preprocessed_review])  # Convert input to feature vector
-    prediction = svc_model.predict(features)
-    return "Positive 🎉" if prediction[0] == 1 else "Negative 😔"
 
 # Prediction on button click
 if st.button("🎬 Predict Sentiment"):
