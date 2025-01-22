@@ -1,15 +1,12 @@
 import joblib
-import numpy as np
-import string
-from gensim.models import Word2Vec
 import streamlit as st
+import string
 from sklearn.svm import SVC
-from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Load the trained models
-svc_model = joblib.load('svc_model.pkl')  # Load the trained SVC model
-vectorizer = joblib.load('vectorizer1.pkl')  # Load the TfidfVectorizer model
-word2vec_model = Word2Vec.load('word2vec_model')  # Load the trained Word2Vec model
+# Load the trained SVC model and vectorizer1
+svc_model = joblib.load('svc_model.pkl')  # Load the trained model
+vectorizer1 = joblib.load('vectorizer1.pkl')  # Load the TfidfVectorizer
 
 # Function to preprocess text (tokenization and cleaning)
 def preprocess_text(text):
@@ -17,37 +14,18 @@ def preprocess_text(text):
     text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
     return text  # Return processed text as a string (not a list of tokens)
 
-# Function to calculate Average Word2Vec for a sentence
-def avg_word2vec(sentence, model):
-    vec = np.zeros(200)  # Size of the word vectors (should match the Word2Vec vector size)
-    count = 0
-    for word in sentence:
-        if word in model.wv:
-            vec += model.wv[word]
-            count += 1
-    if count > 0:
-        vec /= count
-    return vec
-
 # Function to predict sentiment based on the processed text
 def predict_sentiment(review):
     # Step 1: Preprocess the review text
     processed_review = preprocess_text(review)
     
-    # Step 2: Tokenize the preprocessed review text using the loaded vectorizer
-    tokenized_review = vectorizer.transform([processed_review])  # Transform the review into a feature vector
+    # Step 2: Transform the processed review using the vectorizer1
+    features = vectorizer1.transform([processed_review])  # Ensure the input is a list of strings
     
-    # Step 3: Calculate the Average Word2Vec for the review
-    avg_vec = avg_word2vec(processed_review.split(), word2vec_model)
+    # Step 3: Check the shape of the features (for debugging purposes)
+    print(f"Features shape: {features.shape}")
     
-    # Step 4: Combine the features (Tfidf + Word2Vec features)
-    # You can concatenate the TF-IDF and Word2Vec features if necessary, 
-    # or just use one of them based on your model design.
-    
-    # For now, we only use the Word2Vec-based features
-    features = np.array([avg_vec])  # This is a NumPy array with the average Word2Vec vector
-    
-    # Step 5: Make a prediction using the trained SVC model
+    # Step 4: Make a prediction using the trained SVC model
     prediction = svc_model.predict(features)
     
     # Return the sentiment based on the prediction (assuming binary: 1 = Positive, 0 = Negative)
