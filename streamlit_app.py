@@ -60,9 +60,10 @@ def analyze_sentiment(review):
     # Transform the preprocessed review using the TF-IDF vectorizer
     review_tfidf = vectorizer.transform([preprocessed_review])  # Transform the input into TF-IDF features
     
-    # Ensure the review has the correct number of features (200 dimensions in your case)
-    if review_tfidf.shape[1] != 200:
-        st.error(f"Unexpected number of features. Expected 200, but got {review_tfidf.shape[1]}")
+    # Check if the review_tfidf has the expected number of features (e.g., 200 features)
+    expected_feature_count = 200  # Adjust this if you trained the model with a different number of features
+    if review_tfidf.shape[1] != expected_feature_count:
+        st.error(f"Unexpected number of features. Expected {expected_feature_count}, but got {review_tfidf.shape[1]}")
         return "Error: Feature mismatch"
     
     # Make sentiment prediction using the SVC model
