@@ -52,14 +52,18 @@ if st.button("Analyze Sentiment"):
         # Transform the preprocessed review using the TF-IDF vectorizer
         review_tfidf = vectorizer.transform([preprocessed_review])  # Transform the input into TF-IDF features
         
-        # Make sentiment prediction using the SVC model
-        sentiment = svc_model.predict(review_tfidf)  # Predict using the SVC model
-        
-        # Display the sentiment result
-        if sentiment == 1:
-            st.success("Sentiment: Positive 🎬")
+        # Ensure that the review_tfidf is not empty
+        if review_tfidf.shape[0] == 0:
+            st.error("Unable to process review. Please check the input.")
         else:
-            st.error("Sentiment: Negative 🎭")
+            # Make sentiment prediction using the SVC model
+            sentiment = svc_model.predict(review_tfidf)  # Predict using the SVC model
+            
+            # Display the sentiment result
+            if sentiment == 1:
+                st.success("Sentiment: Positive 🎬")
+            else:
+                st.error("Sentiment: Negative 🎭")
         
     else:
         st.error("Please enter a review.")
