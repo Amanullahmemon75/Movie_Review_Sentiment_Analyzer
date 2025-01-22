@@ -3,15 +3,41 @@ import joblib
 import os
 import string
 import nltk
+import requests
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import numpy as np
-from gensim.models import Word2Vec
 from sklearn.svm import SVC
+import numpy as np
+
+# Define paths to store the downloaded models
+models_dir = 'models'  # Directory where models will be saved
+vectorizer1_filename = 'vectorizer1.pkl'
+svc_model_filename = 'svc_model.pkl'
+
+# Ensure the models directory exists
+if not os.path.exists(models_dir):
+    os.makedirs(models_dir)
+
+# URLs of the models in your GitHub repository
+vectorizer1_url = "https://raw.githubusercontent.com/yourusername/yourrepo/main/models/vectorizer1.pkl"
+svc_model_url = "https://raw.githubusercontent.com/yourusername/yourrepo/main/models/svc_model.pkl"
+
+# Download model files from GitHub
+def download_model(url, filename):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(os.path.join(models_dir, filename), 'wb') as f:
+            f.write(response.content)
+    else:
+        st.error(f"Failed to download {filename}")
+
+# Download both models
+download_model(vectorizer1_url, vectorizer1_filename)
+download_model(svc_model_url, svc_model_filename)
 
 # Load the pre-trained models
-vectorizer_path = os.path.join('models', 'vectorizer1.pkl')  # For TF-IDF Vectorizer
-svc_model_path = os.path.join('models', 'svc_model.pkl')  # Trained SVC model
+vectorizer_path = os.path.join(models_dir, vectorizer1_filename)
+svc_model_path = os.path.join(models_dir, svc_model_filename)
 
 vectorizer = joblib.load(vectorizer_path)
 svc_model = joblib.load(svc_model_path)
@@ -29,19 +55,7 @@ def preprocess_text(text):
     text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
     words = text.split()
     words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]  # Lemmatize and remove stopwords
-    return words  # Return preprocessed text as list of words
-
-# Function to calculate Average Word2Vec for a sentence
-def avg_word2vec(sentence, model):
-    vec = np.zeros(200)  # Size of the word vectors (200-dimensional embeddings)
-    count = 0
-    for word in sentence:
-        if word in model.wv:
-            vec += model.wv[word]
-            count += 1
-    if count > 0:
-        vec /= count
-    return vec
+    return " ".join(words)  # Return the preprocessed text as a single string
 
 # Streamlit App
 st.title("Movie Review Sentiment Analysis")
@@ -50,14 +64,14 @@ review = st.text_area("Enter your movie review:")
 
 if st.button("Analyze Sentiment"):
     if review:
-        # Preprocess the review
+        # Preprocess the review text
         preprocessed_review = preprocess_text(review)
         
-        # Calculate average Word2Vec for the preprocessed review
-        avg_vector = avg_word2vec(preprocessed_review, word2vec_model)
+        # Transform the preprocessed review using the TF-IDF vectorizer
+        review_tfidf = vectorizer.transform([preprocessed_review])  # Transform the input into TF-IDF features
         
         # Make sentiment prediction using the SVC model
-        sentiment = svc_model.predict([avg_vector])  # Use the average Word2Vec vector for prediction
+        sentiment = svc_model.predict(review_tfidf)  # Predict using the SVC model
         
         # Display the sentiment result
         st.write(f"Sentiment: {'Positive' if sentiment == 1 else 'Negative'}")
