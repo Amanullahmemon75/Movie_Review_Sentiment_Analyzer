@@ -1,4 +1,4 @@
-Flask
+nltk==3.9.1
 gensim==4.3.3
 joblib==1.4.2
 numpy==1.26.4
