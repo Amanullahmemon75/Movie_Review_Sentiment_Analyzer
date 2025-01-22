@@ -5,7 +5,7 @@ import streamlit as st
 
 # Load the trained SVC model and vectorizer
 svc_model = joblib.load('svc_model.pkl')  # Load the trained model
-vectorizer = joblib.load('vectorizer.pkl')  # Load the TfidfVectorizer
+vectorizer = joblib.load('vectorizer1.pkl')  # Load the TfidfVectorizer
 
 # Function to preprocess text (tokenization and cleaning)
 def preprocess_text(text):
