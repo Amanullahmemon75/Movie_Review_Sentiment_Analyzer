@@ -18,19 +18,25 @@ nltk.download('wordnet')
 vectorizer_path = 'vectorizer1.pkl'  # Path to the TF-IDF vectorizer model
 svc_model_path = 'svc_model.pkl'     # Path to the SVC model
 
-# Check if the model files exist
-if not os.path.exists(vectorizer_path):
-    st.error(f"Error: {vectorizer_path} file not found.")
-elif not os.path.exists(svc_model_path):
-    st.error(f"Error: {svc_model_path} file not found.")
-else:
-    # Load the pre-trained models
+# Initialize variables for models
+vectorizer = None
+svc_model = None
+
+# Function to load models
+def load_models():
+    global vectorizer, svc_model
     try:
-        vectorizer = joblib.load(vectorizer_path)
-        svc_model = joblib.load(svc_model_path)
-        st.success("Models loaded successfully!")
+        if os.path.exists(vectorizer_path) and os.path.exists(svc_model_path):
+            vectorizer = joblib.load(vectorizer_path)
+            svc_model = joblib.load(svc_model_path)
+            st.success("Models loaded successfully!")
+        else:
+            st.error("Model files not found. Please check the paths.")
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
+
+# Load models once at the start of the app
+load_models()
 
 # Initialize preprocessing tools
 stop_words = set(stopwords.words('english'))
@@ -54,6 +60,11 @@ def analyze_sentiment(review):
     Analyzes the sentiment of a given review text.
     Returns 'Positive' or 'Negative' based on the SVC model prediction.
     """
+    # Ensure models are loaded before processing
+    if vectorizer is None or svc_model is None:
+        st.error("Models are not loaded properly. Please try again.")
+        return "Error: Model not loaded"
+
     # Preprocess the review text
     preprocessed_review = preprocess_text(review)
     
