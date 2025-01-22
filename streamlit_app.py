@@ -3,48 +3,22 @@ import joblib
 import os
 import string
 import nltk
-import requests
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.svm import SVC
 import numpy as np
+from sklearn.svm import SVC
 
-# Define paths to store the downloaded models
-models_dir = 'models'  # Directory where models will be saved
-vectorizer1_filename = 'vectorizer1.pkl'
-svc_model_filename = 'svc_model.pkl'
-
-# Ensure the models directory exists
-if not os.path.exists(models_dir):
-    os.makedirs(models_dir)
-
-# URLs of the models in your GitHub repository (replace these with actual URLs)
-vectorizer1_url = "https://github.com/Amanullahmemon75/Movie_Review_Sentiment_Analyzer/tree/main/vectorizer1.pkl"
-svc_model_url = "https://github.com/Amanullahmemon75/Movie_Review_Sentiment_Analyzer/tree/main/svc_model.pkl"
-
-# Download model files from GitHub
-def download_model(url, filename):
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(os.path.join(models_dir, filename), 'wb') as f:
-            f.write(response.content)
-    else:
-        st.error(f"Failed to download {filename}")
-
-# Download both models
-download_model(vectorizer1_url, vectorizer1_filename)
-download_model(svc_model_url, svc_model_filename)
+# Ensure the models are available in the same directory as the script
+vectorizer_path = os.path.join(os.getcwd(), 'vectorizer1.pkl')  # Path to the vectorizer model
+svc_model_path = os.path.join(os.getcwd(), 'svc_model.pkl')  # Path to the SVC model
 
 # Load the pre-trained models
-vectorizer_path = os.path.join(models_dir, vectorizer1_filename)
-svc_model_path = os.path.join(models_dir, svc_model_filename)
-
-# Check if the models are successfully downloaded before loading
-if os.path.exists(vectorizer_path) and os.path.exists(svc_model_path):
+try:
     vectorizer = joblib.load(vectorizer_path)
     svc_model = joblib.load(svc_model_path)
-else:
-    st.error("Failed to load models. Please check the file paths and ensure they are downloaded correctly.")
+    st.write("Models loaded successfully!")
+except Exception as e:
+    st.error(f"Error loading models: {e}")
 
 # Initialize preprocessing tools
 nltk.download('stopwords')
@@ -61,8 +35,11 @@ def preprocess_text(text):
     words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]  # Lemmatize and remove stopwords
     return " ".join(words)  # Return the preprocessed text as a single string
 
-# Streamlit App
-st.title("Movie Review Sentiment Analysis")
+# Streamlit App with Customizations
+st.set_page_config(page_title="Movie Review Sentiment Analysis", page_icon="🎬", layout="wide")
+
+# Title with custom color
+st.markdown('<h1 style="color: #4CAF50;">Movie Review Sentiment Analysis 🎥</h1>', unsafe_allow_html=True)
 
 review = st.text_area("Enter your movie review:")
 
@@ -78,7 +55,10 @@ if st.button("Analyze Sentiment"):
         sentiment = svc_model.predict(review_tfidf)  # Predict using the SVC model
         
         # Display the sentiment result
-        st.write(f"Sentiment: {'Positive' if sentiment == 1 else 'Negative'}")
+        if sentiment == 1:
+            st.success("Sentiment: Positive 🎬")
+        else:
+            st.error("Sentiment: Negative 🎭")
         
     else:
         st.error("Please enter a review.")
