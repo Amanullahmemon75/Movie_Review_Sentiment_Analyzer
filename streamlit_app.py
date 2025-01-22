@@ -9,7 +9,7 @@ from sklearn.svm import SVC
 import numpy as np
 
 
-vectorizer = joblib.load(vectorizer_path)
+vectorizer = joblib.load(vectorizer1_path)
 svc_model = joblib.load(svc_model_path)
 
 # Initialize preprocessing tools
